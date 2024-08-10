@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import httpStatus from 'http-status';
+import jwt from 'jsonwebtoken';
+import config from '../../config';
 import AppError from '../../Helpers/AppError';
+import JWTError from '../../Helpers/JwtError';
 import sendEmail from '../../Utils/SendEmail';
 import CreateAccessToken from '../Auth/Auth.utils';
 import { IJwtPayload, IUser } from './User.interface';
@@ -46,7 +50,18 @@ const RegisterUserToDB = async (userData: IUser) => {
   };
 
   // create access token
-  const accessToken = await CreateAccessToken(jwtPayload);
+  const accessToken = await CreateAccessToken(
+    jwtPayload,
+    config.jwt_access_token_secret as string,
+    config.jwt_access_token_expires_in as string,
+  );
+
+  // create refresh token
+  const refreshToken = await CreateAccessToken(
+    jwtPayload,
+    config.jwt_refresh_token_secret as string,
+    config.jwt_refresh_token_expires_in as string,
+  );
 
   return {
     user: {
@@ -54,6 +69,7 @@ const RegisterUserToDB = async (userData: IUser) => {
       email: newUser?.email,
       verificationCode: newUser?.verificationCode,
       token: accessToken,
+      refreshToken,
     },
   };
 };
@@ -124,6 +140,49 @@ const RequestVerificationCode = async (email: string) => {
   };
 };
 
+//! Refresh Token
+const RefreshToken = async (token: string) => {
+  //check if token is valid
+  //check if the token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_token_secret as string,
+    function (err, decoded) {
+      if (err) {
+        throw new JWTError('Unauthorized Access', httpStatus.UNAUTHORIZED);
+      }
+      return decoded;
+    },
+  );
+  const { email } = decoded as unknown as IJwtPayload;
+
+  //check if user exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError('User does not exist', 404);
+  }
+
+  //check if user is deleted
+  if (user?.isDeleted) {
+    throw new AppError('User is Deleted ', httpStatus.FORBIDDEN);
+  }
+  //create new access token
+  const JwtPayload: IJwtPayload = {
+    email: user?.email,
+    role: user?.roles,
+  };
+
+  const accessToken = CreateAccessToken(
+    JwtPayload,
+    config.jwt_access_token_secret as string,
+    config.jwt_access_token_expires_in as string,
+  );
+
+  return {
+    accessToken,
+  };
+};
+
 //! Register Admin To DB
 // const RegisterAdminToDB = async (password: string, adminData: TAdmin) => {
 //   //:Create user object
@@ -187,4 +246,5 @@ export const UserService = {
   RegisterUserToDB,
   VerifyEmail,
   RequestVerificationCode,
+  RefreshToken,
 };

@@ -6,6 +6,7 @@ import { IJwtPayload, IUser } from '../User/User.interface';
 import { User } from '../User/User.model';
 import { ILoginUser } from './Auth.interface';
 import CreateAccessToken from './Auth.utils';
+import config from '../../config';
 
 const LoginUserToDb = async (payLoad: ILoginUser) => {
   //check if user exists
@@ -38,10 +39,23 @@ const LoginUserToDb = async (payLoad: ILoginUser) => {
     role: user?.roles,
   };
 
-  const accessToken = await CreateAccessToken(jwtPayload);
+  // create access token
+  const accessToken = await CreateAccessToken(
+    jwtPayload,
+    config.jwt_access_token_secret as string,
+    config.jwt_access_token_expires_in as string,
+  );
+
+  // create refresh token
+  const refreshToken = await CreateAccessToken(
+    jwtPayload,
+    config.jwt_refresh_token_secret as string,
+    config.jwt_refresh_token_expires_in as string,
+  );
 
   return {
     accessToken: accessToken,
+    refreshToken,
   };
 };
 

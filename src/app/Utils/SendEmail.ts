@@ -5,13 +5,6 @@ const sendEmail = async (
   subject: string,
   htmlContent: string,
 ) => {
-  console.log(
-    'email',
-    email,
-    config.sendEmail.email_service,
-    config.sendEmail.app_password,
-  );
-
   const transporter = nodemailer.createTransport({
     host: config.sendEmail.email_service,
     port: 587,

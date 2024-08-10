@@ -2,6 +2,7 @@ import express from 'express';
 import ValidateRequest from '../../Middleware/ValidationRequest';
 import { UserValidation } from './User.validation';
 import { UserController } from './User.controller';
+import validateRequest from '../../Middleware/ValidationRequest';
 
 const router = express.Router();
 
@@ -24,6 +25,13 @@ router.post(
   '/request-verification-code',
   ValidateRequest(UserValidation.requestNewOtpValidation),
   UserController.RequestVerificationCode,
+);
+
+//refresh token route
+router.post(
+  '/refresh-token',
+  validateRequest(UserValidation.refreshTokenValidationSchema),
+  UserController.RefreshToken,
 );
 
 //! Create New Admin
