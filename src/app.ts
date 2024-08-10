@@ -10,7 +10,6 @@ app.use(express.json());
 app.use(express.text());
 
 //using cors
-// https://shoe-management-client-eight.vercel.app
 app.use(
   cors({
     origin: 'http://localhost:5173',
@@ -22,7 +21,7 @@ app.use(
 app.use('/api', route);
 
 app.get('/', async (req: Request, res: Response) => {
-  res.send('Welcome To Shoe Store');
+  res.send('Welcome To  MediMart');
 });
 
 //Global Error Handler

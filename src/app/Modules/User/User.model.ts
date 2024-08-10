@@ -1,9 +1,9 @@
-import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { Schema, model } from 'mongoose';
 import config from '../../config';
-import { IUser, UserModel } from './User.interface';
+import { IUser } from './User.interface';
 
-const UserSchema = new Schema<IUser, UserModel>(
+const UserSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -59,12 +59,4 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-//check if password is correct
-UserSchema.static(
-  'isPasswordCorrect',
-  async function (password: string, hashedPassword: string) {
-    return await bcrypt.compare(password, hashedPassword);
-  },
-);
-
-export const User = model<IUser, UserModel>('User', UserSchema);
+export const User = model<IUser>('User', UserSchema);

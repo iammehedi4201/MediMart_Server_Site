@@ -2,15 +2,11 @@ import { userRoles } from '../Modules/User/User.constant';
 import { User } from '../Modules/User/User.model';
 
 const superUser = {
-  name: {
-    firstName: 'Mehedi',
-    lastName: 'Hasan',
-  },
+  name: 'Mehedi Hasan',
   email: 'iammehedi296@gmail.com',
   password: 'Hasan586258',
   role: userRoles.Super_Admin,
-  status: 'active',
-  isDeleted: false,
+  isVerified: true,
 };
 
 const seedSuperAdmin = async () => {

@@ -1,23 +1,38 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
+const sendEmail = async (
+  email: string,
+  subject: string,
+  htmlContent: string,
+) => {
+  console.log(
+    'email',
+    email,
+    config.sendEmail.email_service,
+    config.sendEmail.app_password,
+  );
 
-const sendEmail = async (to: string, code: string) => {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: config.sendEmail.email_service,
     port: 587,
-    secure: config.node_env === 'production',
+    secure: false,
     auth: {
-      user: 'iammehedi296@gmail.com',
-      pass: 'fqey pcei tgvo sfxf',
+      user: config.sendEmail.email,
+      pass: config.sendEmail.app_password,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
-
-  await transporter.sendMail({
-    from: 'iammehedi296@gmail.com', // sender address
-    to, // list of receivers
-    subject: 'Email Verification',
-    text: `Your verification code is: ${code}`,
+  // send mail with defined transport object
+  const info = await transporter.sendMail({
+    from: '"MediMart" <iammehedi296@gmail.com>',
+    to: email,
+    subject,
+    html: htmlContent,
   });
+
+  console.log('Message sent: %s', info.messageId);
 };
 
 export default sendEmail;

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-import { Model } from 'mongoose';
 import { userRoles } from './User.constant';
+
 export interface IUser {
   name: string;
   email: string;
@@ -19,10 +19,3 @@ export interface IJwtPayload {
 }
 
 export type TUserRoles = keyof typeof userRoles;
-
-export interface UserModel extends Model<IUser> {
-  isPasswordCorrect: (
-    password: string,
-    hashedPassword: string,
-  ) => Promise<boolean>;
-}
