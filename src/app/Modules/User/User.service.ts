@@ -140,6 +140,22 @@ const RequestVerificationCode = async (email: string) => {
   };
 };
 
+//! Get User Profile
+const GetUserProfile = async (email: string) => {
+  //:check if user already exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  return {
+    id: user?._id,
+    name: user?.name,
+    email: user?.email,
+    role: user?.roles,
+  };
+};
+
 //! Refresh Token
 const RefreshToken = async (token: string) => {
   //check if token is valid
@@ -246,5 +262,6 @@ export const UserService = {
   RegisterUserToDB,
   VerifyEmail,
   RequestVerificationCode,
+  GetUserProfile,
   RefreshToken,
 };

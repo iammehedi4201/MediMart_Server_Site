@@ -26,7 +26,7 @@ const UserSchema = new Schema<IUser>(
     },
     roles: {
       type: String,
-      enum: ['User', 'Admin', 'Super-Admin'],
+      enum: ['User', 'Admin', 'Super_Admin'],
       default: 'User',
     },
     isDeleted: {

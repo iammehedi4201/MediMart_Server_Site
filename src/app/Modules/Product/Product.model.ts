@@ -1,16 +1,34 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { IProduct } from './Product.interface';
 
-const ProductSchema = new Schema<IProduct>(
+const productSchema = new Schema<IProduct>(
   {
-    productId: {
-      type: String,
-      required: [true, 'Please enter product id'],
-      trim: true,
-    },
     name: {
       type: String,
       required: [true, 'Please enter product name'],
+      trim: true,
+    },
+    slug: {
+      type: String,
+      required: [true, 'Please enter product slug'],
+      unique: true,
+      trim: true,
+    },
+    photos: [
+      {
+        type: String,
+        required: [true, 'Please enter product photos'],
+        trim: true,
+      },
+    ],
+    description: {
+      type: String,
+      required: [true, 'Please enter product description'],
+      trim: true,
+    },
+    metaKey: {
+      type: String,
+      required: [true, 'Please enter product meta key'],
       trim: true,
     },
     price: {
@@ -18,49 +36,58 @@ const ProductSchema = new Schema<IProduct>(
       required: [true, 'Please enter product price'],
       trim: true,
     },
+    discount: {
+      type: Number,
+      required: [true, 'Please enter product discount'],
+      default: 0,
+    },
+    stockStatus: {
+      type: Boolean,
+      default: false,
+    },
     quantity: {
       type: Number,
       required: [true, 'Please enter product quantity'],
       trim: true,
     },
-    brand: {
+    status: {
       type: String,
-      required: [true, 'Please enter product brand'],
+      enum: ['active', 'inactive'],
+      default: 'active',
+    },
+    categories: {
+      primary: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+      },
+      secondary: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+      },
+      tertiary: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+      },
+    },
+    company: {
+      type: String,
+      required: [true, 'Please enter product company'],
       trim: true,
     },
-    model: {
-      type: String,
-      required: [true, 'Please enter product model'],
-      trim: true,
-    },
-    style: {
-      type: String,
-      required: [true, 'Please enter product style'],
-      trim: true,
-    },
-    size: {
+    variants: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Variant',
+      },
+    ],
+    defaultPrice: {
       type: Number,
-      required: [true, 'Please enter product size'],
-    },
-    color: {
-      type: String,
-      required: [true, 'Please enter product color'],
+      required: [true, 'Please enter product default price'],
       trim: true,
     },
-    material: {
-      type: String,
-      required: [true, 'Please enter product material'],
-      trim: true,
-    },
-    closure_Type: {
-      type: String,
-      required: [true, 'Please enter product closure type'],
-      trim: true,
-    },
-    image: {
-      type: String,
-      required: [true, 'Please enter product image'],
-      trim: true,
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -69,4 +96,4 @@ const ProductSchema = new Schema<IProduct>(
   },
 );
 
-export const Product = model<IProduct>('Product', ProductSchema);
+export const Product = model<IProduct>('Product', productSchema);

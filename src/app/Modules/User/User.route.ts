@@ -3,6 +3,7 @@ import ValidateRequest from '../../Middleware/ValidationRequest';
 import { UserValidation } from './User.validation';
 import { UserController } from './User.controller';
 import validateRequest from '../../Middleware/ValidationRequest';
+import CheckAuth from '../../Middleware/CheckAuth';
 
 const router = express.Router();
 
@@ -27,19 +28,18 @@ router.post(
   UserController.RequestVerificationCode,
 );
 
+//! get user Profile
+router.get(
+  '/get-user-profile',
+  CheckAuth('Admin', 'Super_Admin', 'User'),
+  UserController.GetUserProfile,
+);
+
 //refresh token route
 router.post(
   '/refresh-token',
   validateRequest(UserValidation.refreshTokenValidationSchema),
   UserController.RefreshToken,
 );
-
-//! Create New Admin
-// router.post(
-//   '/create-admin',
-//   CheckAuth('Admin', 'Super_Admin'),
-//   ValidateRequest(UserValidation.RegisterAdminSchema),
-//   UserController.RegisterAdminToDB,
-// );
 
 export const UserRoutes = router;

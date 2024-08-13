@@ -1,14 +1,31 @@
+import { Types } from 'mongoose';
+
+interface Category {
+  _id: Types.ObjectId;
+}
+
+interface Variant {
+  _id: Types.ObjectId;
+}
+
 export interface IProduct {
-  productId: string;
   name: string;
+  slug: string;
+  photos?: string[];
+  description?: string;
+  metaKey?: string;
   price: number;
+  discount?: number;
+  stockStatus?: boolean;
   quantity: number;
-  brand: string;
-  model: string;
-  style: string;
-  size: number;
-  color: string;
-  material: string;
-  closure_Type: string;
-  image: string;
+  status?: 'active' | 'inactive';
+  categories: {
+    primary?: Category;
+    secondary?: Category;
+    tertiary?: Category;
+  };
+  variants?: Variant[];
+  company: string;
+  defaultPrice?: number;
+  isDeleted: boolean;
 }

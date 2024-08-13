@@ -1,1 +1,1 @@
-export const searchAbleFields = ['name', 'brand', 'color', 'material'];
+export const searchAbleFields = ['name'];

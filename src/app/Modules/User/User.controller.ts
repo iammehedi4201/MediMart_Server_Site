@@ -52,6 +52,18 @@ const RequestVerificationCode = CatchAsync(async (req, res) => {
   });
 });
 
+//! get user Profile
+const GetUserProfile = CatchAsync(async (req, res) => {
+  const { email } = req.body;
+  const result = await UserService.GetUserProfile(email);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User Profile',
+    data: result,
+  });
+});
+
 //! Refresh Token
 const RefreshToken = CatchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
@@ -80,5 +92,6 @@ export const UserController = {
   RegisterUserToDb,
   VerifyEmail,
   RequestVerificationCode,
+  GetUserProfile,
   RefreshToken,
 };

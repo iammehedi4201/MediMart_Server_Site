@@ -5,7 +5,7 @@ import { AuthService } from './Auth.service';
 
 const LoginUser = CatchAsync(async (req, res) => {
   const result = await AuthService.LoginUserToDb(req.body);
-  const { accessToken, refreshToken } = result;
+  const { token, refreshToken } = result;
   res.cookie('refreshToken', refreshToken, {
     secure: config.node_env === 'production',
     httpOnly: true,
@@ -18,7 +18,7 @@ const LoginUser = CatchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     data: {
-      accessToken: accessToken,
+      token,
     },
   });
 });

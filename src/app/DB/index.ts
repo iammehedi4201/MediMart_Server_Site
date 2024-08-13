@@ -5,7 +5,7 @@ const superUser = {
   name: 'Mehedi Hasan',
   email: 'iammehedi296@gmail.com',
   password: 'Hasan586258',
-  role: userRoles.Super_Admin,
+  roles: userRoles.Super_Admin,
   isVerified: true,
 };
 

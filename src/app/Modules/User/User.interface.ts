@@ -6,7 +6,7 @@ export interface IUser {
   email: string;
   password: string;
   photo: string;
-  roles: 'Admin' | 'Super-Admin' | 'User';
+  roles: 'Admin' | 'Super_Admin' | 'User';
   verificationCode: string;
   expirationTime: Date;
   isVerified: boolean;

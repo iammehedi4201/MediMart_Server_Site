@@ -1,92 +1,96 @@
 import httpStatus from 'http-status';
+import { Querybulder } from '../../builder/QueryBuilders';
 import AppError from '../../Helpers/AppError';
+import { searchAbleFields } from './Product.constant';
 import { IProduct } from './Product.interface';
 import { Product } from './Product.model';
-import { Querybulder } from '../../builder/QueryBuilders';
-import { searchAbleFields } from './Product.constant';
-import generateShoeId from './Product.utils';
 
 const CreateProductToDB = async (payLoad: IProduct) => {
-  const { brand, model, color } = payLoad;
-  payLoad.productId = await generateShoeId(brand, model, color);
   const result = await Product.create(payLoad);
   return result;
 };
 
 const GetProductFromDB = async (query: Record<string, unknown>) => {
-  const productQuery = new Querybulder(Product.find(), query)
+  const ProductQuery = new Querybulder(
+    Product.find({ isDeleted: { $ne: true } })
+      .populate('categories.primary')
+      .populate('categories.secondary')
+      .populate('categories.tertiary')
+      .populate('variants'),
+    query,
+  )
+    .paginate()
     .Filter()
     .search(searchAbleFields)
     .sortBy();
-  const result = await productQuery.modelQuery;
-  return result;
+
+  const result = await ProductQuery.modelQuery;
+  const meta = await ProductQuery.countTotal();
+  return {
+    data: result,
+    meta,
+  };
 };
 
 const GetProductAFromDB = async (productId: string) => {
-  const product = await Product.findById(productId);
+  const product = await Product.findById(productId)
+    .populate('categories.primary')
+    .populate('categories.secondary')
+    .populate('categories.tertiary')
+    .populate('variants');
   if (!product) {
     throw new AppError('Product not found', httpStatus.NOT_FOUND);
   }
   return product;
 };
 
-const UpdateProductFromDB = async (
-  id: string,
-  payLoad: IProduct,
-  query: { duplicate: string },
-) => {
-  const { duplicate } = query;
+const UpdateProductFromDB = async (id: string, updateData: IProduct) => {
   //Check if product exists
   const isProductExists = await Product.findById(id);
   if (!isProductExists) {
     throw new AppError('Product not found', httpStatus.NOT_FOUND);
   }
 
-  // check if duplicate is true and create a new product
-  if (duplicate === 'true') {
-    const { brand, model, color } = payLoad;
-    payLoad.productId = await generateShoeId(brand, model, color);
-    const result = await Product.create(payLoad);
-    return {
-      message: 'Product created successfully',
-      data: result,
-    };
-  } else {
-    //update product
-    const { brand, model, color } = payLoad;
-    payLoad.productId = await generateShoeId(brand, model, color);
-    const result = await Product.findByIdAndUpdate(id, payLoad, {
-      new: true,
-      runValidators: true,
-    });
-
-    return {
-      message: 'Product updated successfully',
-      data: result,
-    };
+  // check if product deleted or not
+  if (isProductExists.isDeleted) {
+    throw new AppError('Product is deleted', httpStatus.BAD_REQUEST);
   }
+
+  // update product
+  const updatedProduct = await Product.findByIdAndUpdate(
+    id,
+    { $set: updateData },
+    { new: true, runValidators: true },
+  )
+    .populate('categories.primary')
+    .populate('categories.secondary')
+    .populate('categories.tertiary')
+    .populate('variants');
+
+  return updatedProduct;
 };
 
-const DeleteProductFromDb = async (ProductIds: string[]) => {
+const DeleteProductFromDb = async (productId: string) => {
   //check if product exists
-  const isProductExists = await Product.find({ _id: { $in: ProductIds } });
+  const product = await Product.findById(productId);
 
-  if (!isProductExists) {
-    throw new AppError('Product not found', httpStatus.NOT_FOUND);
-  }
-
-  const result = await Product.deleteMany({ _id: { $in: ProductIds } });
-
-  return result;
-};
-
-const verifyProduct = async (productId: string) => {
-  //:check if product exists
-  const product = await Product.findOne({ productId });
   if (!product) {
     throw new AppError('Product not found', httpStatus.NOT_FOUND);
   }
-  return product;
+
+  // // check if product deleted or not
+  if (product.isDeleted) {
+    throw new AppError('Product is deleted', httpStatus.BAD_REQUEST);
+  }
+
+  // delete product
+  const result = await Product.findByIdAndUpdate(
+    productId,
+    { isDeleted: true },
+    { new: true },
+  );
+
+  return result;
 };
 
 export const ProductService = {
@@ -95,5 +99,4 @@ export const ProductService = {
   GetProductAFromDB,
   UpdateProductFromDB,
   DeleteProductFromDb,
-  verifyProduct,
 };

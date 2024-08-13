@@ -6,40 +6,33 @@ import CheckAuth from '../../Middleware/CheckAuth';
 
 const router = Router();
 
-//:create product
+//! create product
 router.post(
   '/create-product',
-  CheckAuth('Seller'),
+  CheckAuth('Super_Admin', 'Admin'),
   ValidateRequest(ProductValidation.CreateProductValidationSchema),
   ProductController.CreateProduct,
 );
 
-//:get all products
-router.get('/', CheckAuth('Buyer', 'Seller'), ProductController.GetAllProduct);
+//! get all products
+router.get('/get-products', ProductController.GetAllProduct);
 
-//: get a product
-router.get('/:id', CheckAuth('Buyer', 'Seller'), ProductController.GetAProduct);
+//! get a product
+router.get('/:id', ProductController.GetAProduct);
 
-//:update product
-router.patch(
+//! update product
+router.put(
   '/update-product/:id',
-  CheckAuth('Seller'),
+  CheckAuth('Super_Admin', 'Admin'),
   ValidateRequest(ProductValidation.UpdateProductValidationSchema),
   ProductController.UpdateProduct,
 );
 
-//:delete product
+//! delete product
 router.delete(
-  '/delete-product',
-  CheckAuth('Seller'),
+  '/delete-product/:id',
+  CheckAuth('Super_Admin', 'Admin'),
   ProductController.DeleteProduct,
-);
-
-//:Product Verification
-router.get(
-  '/verify-product/:id',
-  CheckAuth('Buyer', 'Seller'),
-  ProductController.verifyProduct,
 );
 
 export const ProductRoutes = router;

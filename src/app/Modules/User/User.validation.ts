@@ -16,7 +16,6 @@ const RegisterUser = z.object({
       .refine((password) => /[0-9]/.test(password), {
         message: 'must contain at least one number',
       }),
-    roles: z.enum(['User', 'Admin', 'Super-Admin']),
     photo: z.string(),
   }),
 });

@@ -21,46 +21,15 @@ export class Querybulder<T> {
 
   Filter() {
     const queryObj = { ...this.query };
-
     //Exclude fields from query
-    const excludedFields = [
-      'page',
-      'limit',
-      'sortOrder',
-      'minPrice',
-      'maxPrice',
-      'search',
-    ];
+    const excludedFields = ['page', 'limit', 'sortOrder', 'search'];
     excludedFields.forEach((el) => delete queryObj[el]);
-    //check if minPrice and maxPrice exists in query
-    if (this.query['minPrice'] && this.query['maxPrice']) {
-      queryObj['price'] = {
-        $gte: Number(this.query['minPrice']),
-        $lte: Number(this.query['maxPrice']),
-      };
-    } else if (this.query['minPrice']) {
-      queryObj['price'] = { $gte: Number(this.query['minPrice']) };
-    } else if (this.query['maxPrice']) {
-      queryObj['price'] = { $lte: Number(this.query['maxPrice']) };
-    }
-
-    if (this.query['createdAt']) {
-      //give me default date for show all products
-      const date = new Date(this.query['createdAt'] as string);
-      const nextDay = new Date(date);
-      nextDay.setDate(date.getDate() + 1);
-      queryObj['createdAt'] = {
-        $gte: date,
-        $lt: nextDay,
-      };
-    }
-
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
     return this;
   }
 
   sortBy() {
-    const sortBy = 'price';
+    const sortBy = 'createdAt';
     let sortOrder = -1;
     sortOrder = this.query['sortOrder'] === 'asc' ? 1 : -1;
     this.modelQuery = this.modelQuery.sort({ [sortBy]: sortOrder as never });

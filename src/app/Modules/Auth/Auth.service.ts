@@ -54,7 +54,7 @@ const LoginUserToDb = async (payLoad: ILoginUser) => {
   );
 
   return {
-    accessToken: accessToken,
+    token: accessToken,
     refreshToken,
   };
 };
