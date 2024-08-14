@@ -21,6 +21,13 @@ router.get(
   OrderController.getAllOrders,
 );
 
+//! Get a single Order
+router.get(
+  '/get-order/:id',
+  CheckAuth('Super_Admin', 'Admin'),
+  OrderController.getSingleOrder,
+);
+
 //! Get Order History
 router.get(
   '/get-order-History',
@@ -28,12 +35,11 @@ router.get(
   OrderController.GetOrdersHistory,
 );
 
-//! Update Order
+//! Update Order status
 router.put(
   '/update-order/:id',
   CheckAuth('Super_Admin', 'Admin'),
-  validateRequest(OrderValidation.orderSchema),
-  OrderController.updateOrder,
+  OrderController.updateOrderStatus,
 );
 
 //! Delete Order

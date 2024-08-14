@@ -21,11 +21,11 @@ const LoginUserToDb = async (payLoad: ILoginUser) => {
     throw new AppError('User is deleted', 400);
   }
 
-  //check if password is correc
+  //check if password is correct
   const isPasswordCorrect = await bcrypt.compare(
-    payLoad?.password,
-    user?.password,
-  );
+    payLoad.password,
+    user.password,
+  ); // true
 
   if (!isPasswordCorrect) {
     throw new AppError('Password is incorrect', 400);

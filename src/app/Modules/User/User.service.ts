@@ -9,6 +9,7 @@ import CreateAccessToken from '../Auth/Auth.utils';
 import { IJwtPayload, IUser, TUserRoles } from './User.interface';
 import { User } from './User.model';
 import { Querybulder } from '../../builder/QueryBuilders';
+import bcrypt from 'bcrypt';
 
 //! Register User to DB
 const RegisterUserToDB = async (userData: IUser) => {
@@ -17,6 +18,12 @@ const RegisterUserToDB = async (userData: IUser) => {
   if (isUserExist) {
     throw new AppError('User already exists', 400);
   }
+
+  // convert password to hash
+  userData.password = await bcrypt.hash(
+    userData.password,
+    Number(config.salt_rounds),
+  );
 
   const verificationCode = Math.floor(10000 + Math.random() * 90000).toString();
   const expirationTime = new Date(Date.now() + 59 * 1000); // 59 seconds from now

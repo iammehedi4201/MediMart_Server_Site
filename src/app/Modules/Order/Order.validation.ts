@@ -31,6 +31,19 @@ const orderSchema = z.object({
   }),
 });
 
+const UpdateOrderStatus = z.object({
+  body: z.object({
+    status: z.enum([
+      'pending',
+      'processed',
+      'shipped',
+      'delivered',
+      'cancelled',
+    ]),
+  }),
+});
+
 export const OrderValidation = {
   orderSchema,
+  UpdateOrderStatus,
 };

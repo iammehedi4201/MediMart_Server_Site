@@ -26,8 +26,6 @@ const CheckAuth = (...requireRoles: TUserRoles[]) => {
     );
     const { email, role } = decode as unknown as IJwtPayload;
 
-    console.log('role', role);
-
     //check if user is exist or not
     const user = await User.findOne({ email });
     if (!user) {

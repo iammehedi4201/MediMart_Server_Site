@@ -62,19 +62,47 @@ const createOrderToDB = async (payLoad: IOrder) => {
 //! Get all Orders
 const getAllOrders = async (query: Record<string, unknown>) => {
   const orderQuery = new Querybulder(
-    Order.find({ isDeleted: { $ne: true } }),
+    Order.find({ isDeleted: { $ne: true } })
+      .populate('user') // Populate user details
+      .populate('products.product'), // Populate product details
     query,
   )
     .paginate()
     .Filter()
     .sortBy();
 
-  const result = await orderQuery.modelQuery; //
+  const result = await orderQuery.modelQuery;
   const meta = await orderQuery.countTotal();
+
+  const formattedOrders = result.map((order: any) => ({
+    id: order._id,
+    userName: order.user.name,
+    userEmail: order.user.email,
+    userPhone: order.shippingAddress.phone,
+    productDetails: order.products.map((item: any) => ({
+      name: item.product.name,
+      price: item.price,
+    })),
+    totalAmount: order.totalAmount,
+    shippingAddress: `${order.shippingAddress.address}, ${order.shippingAddress.subDistrict}, ${order.shippingAddress.district}`,
+    status: order.status,
+    orderDate: order.orderDate,
+  }));
   return {
-    data: result,
+    data: formattedOrders,
     meta,
   };
+};
+
+//! Get Single Order
+const getSingleOrder = async (id: string) => {
+  // check if order exist
+  const order = await Order.findById(id);
+  if (!order) {
+    throw new AppError('Order not found', httpStatus.NOT_FOUND);
+  }
+
+  return order;
 };
 
 //! Get Order History
@@ -100,24 +128,34 @@ const GetOrdersHistory = async (salesHistory: string) => {
 };
 
 //! Update Order
-const updateOrder = async (id: string, payLoad: IOrder) => {
+const updateOrderStatus = async (id: string, payLoad: IOrder) => {
+  console.log(payLoad);
+
   //check if order exist
   const order = await Order.findById(id);
   if (!order) {
     throw new AppError('Order not found', httpStatus.NOT_FOUND);
   }
-
   //update order
-  const updatedOrder = await Order.findByIdAndUpdate(id, payLoad, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedOrder = await Order.findByIdAndUpdate(
+    id,
+    { status: payLoad.status },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
   return updatedOrder;
 };
 
 //! Delete Order
-const deleteOrder = async (id: string) => {
+const deleteOrder = async (
+  id: string,
+  payload: {
+    isDeleted: boolean;
+  },
+) => {
   //check if order exist
   const order = await Order.findById(id);
   if (!order) {
@@ -125,13 +163,14 @@ const deleteOrder = async (id: string) => {
   }
 
   //delete order
-  await Order.findByIdAndUpdate(id, { isDeleted: true });
+  await Order.findByIdAndUpdate(id, payload, { new: true });
 };
 
 export const OrderService = {
   createOrderToDB,
   getAllOrders,
   GetOrdersHistory,
-  updateOrder,
+  updateOrder: updateOrderStatus,
   deleteOrder,
+  getSingleOrder,
 };

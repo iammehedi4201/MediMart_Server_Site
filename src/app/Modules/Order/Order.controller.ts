@@ -25,6 +25,18 @@ const getAllOrders = CatchAsync(async (req, res) => {
   });
 });
 
+//! get single Order
+const getSingleOrder = CatchAsync(async (req, res) => {
+  const result = await OrderService.getSingleOrder(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Order fetched successfully',
+    data: result,
+  });
+});
+
+//! get Orders History
 const GetOrdersHistory = CatchAsync(async (req, res) => {
   const { salesHistory } = req.query;
   const result = await OrderService.GetOrdersHistory(salesHistory as string);
@@ -37,7 +49,9 @@ const GetOrdersHistory = CatchAsync(async (req, res) => {
 });
 
 //! update Order
-const updateOrder = CatchAsync(async (req, res) => {
+const updateOrderStatus = CatchAsync(async (req, res) => {
+  console.log(req.body);
+
   const result = await OrderService.updateOrder(req.params.id, req.body);
   sendResponse(res, {
     success: true,
@@ -49,7 +63,7 @@ const updateOrder = CatchAsync(async (req, res) => {
 
 //! delete Order
 const deleteOrder = CatchAsync(async (req, res) => {
-  await OrderService.deleteOrder(req.params.id);
+  await OrderService.deleteOrder(req.params.id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -62,6 +76,7 @@ export const OrderController = {
   createOrderToDB,
   getAllOrders,
   GetOrdersHistory,
-  updateOrder,
+  updateOrderStatus,
   deleteOrder,
+  getSingleOrder,
 };

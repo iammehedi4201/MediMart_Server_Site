@@ -33,7 +33,7 @@ const GetProductFromDB = async (query: Record<string, unknown>) => {
 };
 
 const GetProductAFromDB = async (productId: string) => {
-  const product = await Product.findById(productId);
+  const product = await Product.findById(productId).populate('variants');
   if (!product) {
     throw new AppError('Product not found', httpStatus.NOT_FOUND);
   }
