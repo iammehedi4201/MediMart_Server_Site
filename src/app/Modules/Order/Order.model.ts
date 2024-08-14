@@ -51,7 +51,7 @@ const orderSchema = new Schema<IOrder>(
         variant: {
           type: Schema.Types.ObjectId,
           ref: 'Variant',
-          required: [true, 'Variant is required'],
+          required: false, // Allow variant to be optional
         },
         quantity: {
           type: Number,

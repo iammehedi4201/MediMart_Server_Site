@@ -6,8 +6,9 @@ import AppError from '../../Helpers/AppError';
 import JWTError from '../../Helpers/JwtError';
 import sendEmail from '../../Utils/SendEmail';
 import CreateAccessToken from '../Auth/Auth.utils';
-import { IJwtPayload, IUser } from './User.interface';
+import { IJwtPayload, IUser, TUserRoles } from './User.interface';
 import { User } from './User.model';
+import { Querybulder } from '../../builder/QueryBuilders';
 
 //! Register User to DB
 const RegisterUserToDB = async (userData: IUser) => {
@@ -45,6 +46,7 @@ const RegisterUserToDB = async (userData: IUser) => {
 
   //create access token
   const jwtPayload: IJwtPayload = {
+    id: newUser._id,
     email: newUser.email,
     role: newUser.roles,
   };
@@ -71,6 +73,24 @@ const RegisterUserToDB = async (userData: IUser) => {
       token: accessToken,
       refreshToken,
     },
+  };
+};
+
+//! Get All Users
+const GetAllUsers = async (query: Record<string, unknown>) => {
+  const userQuery = new Querybulder(
+    User.find({ isDeleted: { $ne: true } }),
+    query,
+  )
+    .paginate()
+    .Filter()
+    .sortBy();
+
+  const result = await userQuery.modelQuery; //
+  const meta = await userQuery.countTotal();
+  return {
+    data: result,
+    meta,
   };
 };
 
@@ -152,7 +172,24 @@ const GetUserProfile = async (email: string) => {
     id: user?._id,
     name: user?.name,
     email: user?.email,
+    photo: user?.photo,
     role: user?.roles,
+  };
+};
+
+//! Change Role
+const ChangeRole = async (id: string, role: TUserRoles) => {
+  //:check if user already exists
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  user.roles = role;
+  await user.save();
+
+  return {
+    message: 'User role updated successfully',
   };
 };
 
@@ -184,6 +221,7 @@ const RefreshToken = async (token: string) => {
   }
   //create new access token
   const JwtPayload: IJwtPayload = {
+    id: user?._id,
     email: user?.email,
     role: user?.roles,
   };
@@ -259,6 +297,8 @@ const RefreshToken = async (token: string) => {
 // };
 
 export const UserService = {
+  GetAllUsers,
+  ChangeRole,
   RegisterUserToDB,
   VerifyEmail,
   RequestVerificationCode,

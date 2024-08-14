@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
+import mongoose from 'mongoose';
 import { userRoles } from './User.constant';
 
 export interface IUser {
+  _id: mongoose.Types.ObjectId;
   name: string;
   email: string;
   password: string;
@@ -14,6 +16,7 @@ export interface IUser {
 }
 
 export interface IJwtPayload {
+  id: mongoose.Types.ObjectId;
   email: string;
   role: string;
 }

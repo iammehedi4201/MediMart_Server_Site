@@ -80,11 +80,6 @@ const productSchema = new Schema<IProduct>(
         ref: 'Variant',
       },
     ],
-    defaultPrice: {
-      type: Number,
-      required: [true, 'Please enter product default price'],
-      trim: true,
-    },
     isDeleted: {
       type: Boolean,
       default: false,

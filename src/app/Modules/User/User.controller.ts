@@ -27,6 +27,18 @@ const RegisterUserToDb = CatchAsync(async (req, res) => {
   });
 });
 
+//! get all users
+const GetAllUsers = CatchAsync(async (req, res) => {
+  const result = await UserService.GetAllUsers(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'All Users',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 //! verify email
 const VerifyEmail = CatchAsync(async (req, res) => {
   const { email, verificationCode } = req.body;
@@ -54,8 +66,9 @@ const RequestVerificationCode = CatchAsync(async (req, res) => {
 
 //! get user Profile
 const GetUserProfile = CatchAsync(async (req, res) => {
-  const { email } = req.body;
-  const result = await UserService.GetUserProfile(email);
+  const { email } = req.query;
+
+  const result = await UserService.GetUserProfile(email as string);
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -64,9 +77,24 @@ const GetUserProfile = CatchAsync(async (req, res) => {
   });
 });
 
+//! change user role
+const changeRole = CatchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+  const result = await UserService.ChangeRole(id, role);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User Role Updated Successfully',
+    data: result,
+  });
+});
+
 //! Refresh Token
 const RefreshToken = CatchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
+  console.log('refreshToken', refreshToken);
+
   const result = await UserService.RefreshToken(refreshToken);
   sendResponse(res, {
     statusCode: 200,
@@ -90,8 +118,10 @@ const RefreshToken = CatchAsync(async (req, res) => {
 
 export const UserController = {
   RegisterUserToDb,
+  GetAllUsers,
   VerifyEmail,
   RequestVerificationCode,
   GetUserProfile,
   RefreshToken,
+  changeRole,
 };

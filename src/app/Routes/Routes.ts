@@ -14,7 +14,7 @@ export const moduleRoute = [
     route: ProductRoutes,
   },
   {
-    path: '/auth',
+    path: '/user',
     route: UserRoutes,
   },
   {

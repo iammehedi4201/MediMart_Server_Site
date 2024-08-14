@@ -22,7 +22,10 @@ const LoginUserToDb = async (payLoad: ILoginUser) => {
   }
 
   //check if password is correc
-  const isPasswordCorrect = bcrypt.compare(payLoad?.password, user?.password);
+  const isPasswordCorrect = await bcrypt.compare(
+    payLoad?.password,
+    user?.password,
+  );
 
   if (!isPasswordCorrect) {
     throw new AppError('Password is incorrect', 400);
@@ -33,8 +36,11 @@ const LoginUserToDb = async (payLoad: ILoginUser) => {
     throw new AppError('Email is Verified First Verify the email', 400);
   }
 
+  console.log('Role', user?.roles);
+
   //create access token
   const jwtPayload: IJwtPayload = {
+    id: user?._id,
     email: user?.email,
     role: user?.roles,
   };

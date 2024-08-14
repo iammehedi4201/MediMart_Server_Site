@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Define the Zod schema for IShippingAddress
 const shippingAddressSchema = z.object({
   division: z.string(),
   district: z.string(),
@@ -10,23 +9,24 @@ const shippingAddressSchema = z.object({
   phone: z.string(),
 });
 
-// Define the Zod schema for IOrder
+const productSchema = z.object({
+  product: z.string(),
+  variant: z.string().nullable(), // Allow variant to be null or empty string
+  quantity: z.number(),
+  price: z.number(),
+});
+
 const orderSchema = z.object({
   body: z.object({
     user: z.string(),
     products: z.array(
-      z.object({
-        product: z.string(),
-        variant: z.string(),
-        quantity: z.number(),
-        price: z.number(),
-      }),
+      productSchema.transform((val) => ({
+        ...val,
+        variant: val.variant === '' ? null : val.variant, // Replace empty strings with null
+      })),
     ),
     shippingAddress: shippingAddressSchema,
     totalAmount: z.number(),
-    status: z
-      .enum(['pending', 'processed', 'shipped', 'delivered', 'cancelled'])
-      .default('pending'),
     orderDate: z.string(),
   }),
 });

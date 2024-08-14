@@ -29,11 +29,12 @@ export const globalErrorHandler: ErrorRequestHandler = (
 
   //Ultimately we will send this errorReponse to the client
   return res.status(errorResponse.statusCode).json({
+    statusCode: errorResponse.statusCode,
     status: errorResponse.status,
     message: errorResponse.message,
     errorDetails: errorResponse.errorDetails,
     errorSource: errorResponse.errorSource,
-    err,
+    // err,
     stack:
       config.node_env === 'production' || errorResponse.stack === null
         ? null

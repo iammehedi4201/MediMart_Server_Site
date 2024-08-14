@@ -25,9 +25,6 @@ const CreateProductValidationSchema = z.object({
       .optional(),
     variants: z.array(z.string()).optional(),
     company: z.string().trim(),
-    defaultPrice: z
-      .number()
-      .nonnegative('Please enter a valid product default price'),
   }),
 });
 
@@ -70,10 +67,6 @@ const UpdateProductValidationSchema = z.object({
       .optional(),
     variants: z.array(z.string()).optional(),
     company: z.string().trim().optional(),
-    defaultPrice: z
-      .number()
-      .nonnegative('Please enter a valid product default price')
-      .optional(),
   }),
 });
 

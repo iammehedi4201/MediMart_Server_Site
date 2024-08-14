@@ -26,6 +26,5 @@ export interface IProduct {
   };
   variants?: Variant[];
   company: string;
-  defaultPrice?: number;
   isDeleted: boolean;
 }
