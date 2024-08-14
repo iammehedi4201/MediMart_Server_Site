@@ -90,6 +90,18 @@ const changeRole = CatchAsync(async (req, res) => {
   });
 });
 
+//! delete user
+const DeleteUser = CatchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await UserService.DeleteUser(id, req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User Deleted Successfully',
+    data: result,
+  });
+});
+
 //! Refresh Token
 const RefreshToken = CatchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
@@ -124,4 +136,5 @@ export const UserController = {
   GetUserProfile,
   RefreshToken,
   changeRole,
+  DeleteUser,
 };

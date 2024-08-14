@@ -26,6 +26,17 @@ const getAllCategories = async (query: Record<string, unknown>) => {
   };
 };
 
+//! get category by id
+const getCategoryById = async (id: string) => {
+  // check if category exist
+  const category = await Category.findById(id);
+  if (!category) {
+    throw new Error('Category not found');
+  }
+
+  return category;
+};
+
 //! update category
 const updateCategory = async (id: string, payLoad: ICategory) => {
   //check if category exist
@@ -45,19 +56,21 @@ const updateCategory = async (id: string, payLoad: ICategory) => {
 
 //! delete category
 const deleteCategory = async (id: string) => {
+  console.log('id', id);
+
   //check if category exist
   const category = await Category.findById(id);
   if (!category) {
     throw new Error('Category not found');
   }
-
   //delete category
-  await Category.findByIdAndUpdate(id, { isDeleted: true });
+  await Category.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
 };
 
 export const categoryService = {
   createCategoryToDB,
   getAllCategories,
+  getCategoryById,
   updateCategory,
   deleteCategory,
 };

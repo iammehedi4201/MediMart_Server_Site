@@ -17,6 +17,9 @@ router.post(
 //! get all categories
 router.get('/get-all-categories', categoryController.getAllCategories);
 
+//! get category by id
+router.get('/get-category/:id', categoryController.getCategoryById);
+
 //! update category
 router.put(
   '/update-category/:id',

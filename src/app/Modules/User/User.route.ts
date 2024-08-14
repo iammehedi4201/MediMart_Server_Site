@@ -49,6 +49,13 @@ router.put(
   UserController.changeRole,
 );
 
+//! delete user
+router.delete(
+  '/delete-user/:id',
+  CheckAuth('Super_Admin', 'Admin'),
+  UserController.DeleteUser,
+);
+
 //refresh token route
 router.post(
   '/refresh-token',

@@ -237,6 +237,21 @@ const RefreshToken = async (token: string) => {
   };
 };
 
+//! Delete User
+const DeleteUser = async (id: string, payload: { isDeleted: boolean }) => {
+  //:check if user already exists
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  await User.findByIdAndUpdate(id, payload, { new: true });
+
+  return {
+    message: 'User deleted successfully',
+  };
+};
+
 //! Register Admin To DB
 // const RegisterAdminToDB = async (password: string, adminData: TAdmin) => {
 //   //:Create user object
@@ -304,4 +319,5 @@ export const UserService = {
   RequestVerificationCode,
   GetUserProfile,
   RefreshToken,
+  DeleteUser,
 };

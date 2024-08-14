@@ -25,6 +25,17 @@ const getAllCategories = CatchAsync(async (req, res) => {
   });
 });
 
+//! get category by id
+const getCategoryById = CatchAsync(async (req, res) => {
+  const result = await categoryService.getCategoryById(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Category',
+    data: result,
+  });
+});
+
 //! update category
 const updateCategory = CatchAsync(async (req, res) => {
   const result = await categoryService.updateCategory(req.params.id, req.body);
@@ -50,6 +61,7 @@ const deleteCategory = CatchAsync(async (req, res) => {
 export const categoryController = {
   createCategoryToDB,
   getAllCategories,
+  getCategoryById,
   updateCategory,
   deleteCategory,
 };
