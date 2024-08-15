@@ -36,6 +36,20 @@ const getSingleOrder = CatchAsync(async (req, res) => {
   });
 });
 
+//! get User Orders
+const getUserOrders = CatchAsync(async (req, res) => {
+  console.log('req.params.id', req.params.id);
+
+  const result = await OrderService.getUserOrders(req.params.id, req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User Orders fetched successfully',
+    meta: result?.meta,
+    data: result?.data,
+  });
+});
+
 //! get Orders History
 const GetOrdersHistory = CatchAsync(async (req, res) => {
   const { salesHistory } = req.query;
@@ -50,8 +64,6 @@ const GetOrdersHistory = CatchAsync(async (req, res) => {
 
 //! update Order
 const updateOrderStatus = CatchAsync(async (req, res) => {
-  console.log(req.body);
-
   const result = await OrderService.updateOrder(req.params.id, req.body);
   sendResponse(res, {
     success: true,
@@ -79,4 +91,5 @@ export const OrderController = {
   updateOrderStatus,
   deleteOrder,
   getSingleOrder,
+  getUserOrders,
 };

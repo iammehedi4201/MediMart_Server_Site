@@ -26,8 +26,22 @@ const GetProductFromDB = async (query: Record<string, unknown>) => {
 
   const result = await ProductQuery.modelQuery;
   const meta = await ProductQuery.countTotal();
+
+  const formattedResult = result.map((product) => {
+    const { categories, variants, ...rest } = product.toObject();
+    return {
+      ...rest,
+      categories: {
+        primary: categories.primary?.name,
+        secondary: categories.secondary?.name,
+        tertiary: categories.tertiary?.name,
+      },
+      variants,
+    };
+  });
+
   return {
-    data: result,
+    data: formattedResult,
     meta,
   };
 };

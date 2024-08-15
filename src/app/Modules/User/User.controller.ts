@@ -77,6 +77,17 @@ const GetUserProfile = CatchAsync(async (req, res) => {
   });
 });
 
+//! update user profile
+const updateUserProfile = CatchAsync(async (req, res) => {
+  const result = await UserService.UpdateUserProfile(req.params.id, req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User Profile Updated Successfully',
+    data: result,
+  });
+});
+
 //! change user role
 const changeRole = CatchAsync(async (req, res) => {
   const { id } = req.params;
@@ -137,4 +148,5 @@ export const UserController = {
   RefreshToken,
   changeRole,
   DeleteUser,
+  updateUserProfile,
 };

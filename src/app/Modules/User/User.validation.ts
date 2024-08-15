@@ -43,6 +43,14 @@ const changeRoleValidation = z.object({
   }),
 });
 
+const updateUserProfileValidation = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    email: z.string().email().optional(),
+    photo: z.string().optional(),
+  }),
+});
+
 // const refreshTokenValidationSchema = z.object({
 //   cookies: z.object({
 //     refreshToken: z.string({
@@ -56,4 +64,5 @@ export const UserValidation = {
   verifyEmailValidation,
   requestNewOtpValidation,
   changeRoleValidation,
+  updateUserProfileValidation,
 };

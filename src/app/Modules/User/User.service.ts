@@ -95,6 +95,7 @@ const GetAllUsers = async (query: Record<string, unknown>) => {
 
   const result = await userQuery.modelQuery; //
   const meta = await userQuery.countTotal();
+
   return {
     data: result,
     meta,
@@ -184,6 +185,20 @@ const GetUserProfile = async (email: string) => {
   };
 };
 
+//! Update User Profile
+const UpdateUserProfile = async (id: string, payload: Partial<IUser>) => {
+  //:check if user already exists
+  const user = await User.findById({ _id: id, isDeleted: { $ne: true } });
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  // update user profile
+  const updatedInfo = await User.findByIdAndUpdate(id, payload, { new: true });
+
+  return updatedInfo;
+};
+
 //! Change Role
 const ChangeRole = async (id: string, role: TUserRoles) => {
   //:check if user already exists
@@ -251,7 +266,6 @@ const DeleteUser = async (id: string, payload: { isDeleted: boolean }) => {
   if (!user) {
     throw new AppError('User not found', 404);
   }
-
   await User.findByIdAndUpdate(id, payload, { new: true });
 
   return {
@@ -325,6 +339,7 @@ export const UserService = {
   VerifyEmail,
   RequestVerificationCode,
   GetUserProfile,
+  UpdateUserProfile,
   RefreshToken,
   DeleteUser,
 };

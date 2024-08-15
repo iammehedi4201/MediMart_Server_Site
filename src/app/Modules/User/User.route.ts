@@ -41,6 +41,14 @@ router.get(
   UserController.GetUserProfile,
 );
 
+//! update user profile
+router.put(
+  '/update-user-profile/:id',
+  CheckAuth('Admin', 'Super_Admin', 'User'),
+  ValidateRequest(UserValidation.updateUserProfileValidation),
+  UserController.updateUserProfile,
+);
+
 //! change role
 router.put(
   '/change-role/:id',

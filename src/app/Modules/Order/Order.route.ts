@@ -24,8 +24,15 @@ router.get(
 //! Get a single Order
 router.get(
   '/get-order/:id',
-  CheckAuth('Super_Admin', 'Admin'),
+  CheckAuth('Super_Admin', 'Admin', 'User'),
   OrderController.getSingleOrder,
+);
+
+//! Get user based Orders
+router.get(
+  '/get-user-orders/:id',
+  CheckAuth('Super_Admin', 'Admin', 'User'),
+  OrderController.getUserOrders,
 );
 
 //! Get Order History

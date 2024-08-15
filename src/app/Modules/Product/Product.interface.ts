@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from 'mongoose';
 
 interface Category {
@@ -9,6 +10,7 @@ interface Variant {
 }
 
 export interface IProduct {
+  toObject: any;
   name: string;
   slug: string;
   photos?: string[];

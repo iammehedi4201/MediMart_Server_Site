@@ -13,6 +13,7 @@ import {
   LastWeekSalesHistory,
   LastYearSalesHistory,
 } from './Order.utlis';
+import { User } from '../User/User.model';
 
 //! Create order to DB
 const createOrderToDB = async (payLoad: IOrder) => {
@@ -96,13 +97,73 @@ const getAllOrders = async (query: Record<string, unknown>) => {
 
 //! Get Single Order
 const getSingleOrder = async (id: string) => {
-  // check if order exist
-  const order = await Order.findById(id);
+  // check if order exists
+  const order = await Order.findById(id)
+    .populate('user') // Populate user details and only retrieve the 'name' field
+    .populate('products.product'); // Populate product details
+
   if (!order) {
     throw new AppError('Order not found', httpStatus.NOT_FOUND);
   }
 
-  return order;
+  // Format the order details
+  const formattedOrder = {
+    id: order._id,
+    userName: order?.shippingAddress?.name,
+    userPhone: order.shippingAddress.phone,
+    productDetails: order.products.map((item: any) => ({
+      name: item.product.name,
+      price: item.price,
+    })),
+    totalAmount: order.totalAmount,
+    shippingAddress: `${order.shippingAddress.address}, ${order.shippingAddress.subDistrict}, ${order.shippingAddress.district}`,
+    status: order.status,
+    orderDate: order.orderDate,
+  };
+
+  return formattedOrder;
+};
+
+//! Get User Orders
+const getUserOrders = async (id: string, query: Record<string, unknown>) => {
+  //check if user exist
+  const isUserExist = await User.findById(id);
+  if (!isUserExist) {
+    throw new AppError('User not found', httpStatus.NOT_FOUND);
+  }
+
+  const GetUserOrderQuery = new Querybulder(
+    Order.find({ user: id, isDeleted: { $ne: true } })
+      .populate('user') // Populate user details
+      .populate('products.product'), // Populate product details
+    query,
+  )
+    .paginate()
+    .Filter()
+    .sortBy();
+
+  const result = await GetUserOrderQuery.modelQuery; //
+  const meta = await GetUserOrderQuery.countTotal();
+
+  const formattedOrders = result.map((order: any) => ({
+    id: order._id,
+    userName: order.user.name,
+    userEmail: order.user.email,
+    userPhone: order.shippingAddress.phone,
+    productDetails: order.products.map((item: any) => ({
+      name: item.product.name,
+      price: item.price,
+    })),
+    totalAmount: order.totalAmount,
+    shippingAddress: `${order.shippingAddress.address}, ${order.shippingAddress.subDistrict}, ${order.shippingAddress.district}`,
+    status: order.status,
+    orderDate: order.orderDate,
+  }));
+
+  return {
+    data: formattedOrders,
+    meta,
+  };
 };
 
 //! Get Order History
@@ -129,8 +190,6 @@ const GetOrdersHistory = async (salesHistory: string) => {
 
 //! Update Order
 const updateOrderStatus = async (id: string, payLoad: IOrder) => {
-  console.log(payLoad);
-
   //check if order exist
   const order = await Order.findById(id);
   if (!order) {
@@ -173,4 +232,5 @@ export const OrderService = {
   updateOrder: updateOrderStatus,
   deleteOrder,
   getSingleOrder,
+  getUserOrders,
 };
