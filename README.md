@@ -67,6 +67,6 @@ http://localhost: your server port number like 3001
 7. Api Documentation :
 
 ```ts
-https://documenter.getpostman.com/view/31186550/2s9YyvC1Qz
+https://documenter.getpostman.com/view/31186550/2sA3s7ioS8
 
 ```
