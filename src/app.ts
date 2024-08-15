@@ -10,9 +10,22 @@ app.use(express.json());
 app.use(express.text());
 
 //using cors
+// Define allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://medi-mart-client.vercel.app',
+];
+
+// CORS configuration
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   }),
 );

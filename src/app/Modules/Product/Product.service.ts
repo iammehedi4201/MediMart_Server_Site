@@ -31,11 +31,9 @@ const GetProductFromDB = async (query: Record<string, unknown>) => {
     const { categories, variants, ...rest } = product.toObject();
     return {
       ...rest,
-      categories: {
-        primary: categories.primary?.name,
-        secondary: categories.secondary?.name,
-        tertiary: categories.tertiary?.name,
-      },
+      primaryCategory: categories.primary?.name,
+      secondaryCategory: categories.secondary?.name,
+      tertiaryCategory: categories.tertiary?.name,
       variants,
     };
   });

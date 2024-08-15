@@ -18,7 +18,11 @@ router.post(
 router.get('/get-all-categories', categoryController.getAllCategories);
 
 //! get category by id
-router.get('/get-category/:id', categoryController.getCategoryById);
+router.get(
+  '/get-category/:id',
+  CheckAuth('Admin', 'Super_Admin', 'User'),
+  categoryController.getCategoryById,
+);
 
 //! update category
 router.put(

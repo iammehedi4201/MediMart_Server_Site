@@ -21,9 +21,11 @@ export class Querybulder<T> {
 
   Filter() {
     const queryObj = { ...this.query };
+    console.log(queryObj);
     //Exclude fields from query
     const excludedFields = ['page', 'limit', 'sortOrder', 'search'];
     excludedFields.forEach((el) => delete queryObj[el]);
+    // categorize
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
     return this;
   }
